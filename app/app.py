@@ -1,13 +1,15 @@
 """
 API REST simple avec Flask.
+3 routes pour demontrer une application realiste.
 """
 
 import os
 import datetime
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 app = Flask(__name__)
 
+# Version de l'API - utile pour le health check et le monitoring
 API_VERSION = "1.0.0"
 
 
@@ -27,8 +29,63 @@ def home():
         "version": API_VERSION,
         "endpoints": {
             "GET /": "Cette page",
-            "GET /health": "Health check"
+            "GET /health": "Health check",
+            "POST /calculate": "Calculatrice (envoyer JSON avec a, b, operation)",
+            "GET /info": "Informations sur l'environnement"
         }
+    }), 200
+
+
+@app.route("/calculate", methods=["POST"])
+def calculate():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "Corps JSON requis"}), 400
+
+    a = data.get("a")
+    b = data.get("b")
+    operation = data.get("operation")
+
+    if a is None or b is None or operation is None:
+        return jsonify({"error": "Champs requis : a, b, operation"}), 400
+
+    if not isinstance(a, (int, float)) or not isinstance(b, (int, float)):
+        return jsonify({"error": "a et b doivent etre des nombres"}), 400
+
+    operations = {
+        "add": lambda x, y: x + y,
+        "subtract": lambda x, y: x - y,
+        "multiply": lambda x, y: x * y,
+        "divide": lambda x, y: x / y if y != 0 else None,
+    }
+
+    if operation not in operations:
+        return jsonify({
+            "error": f"Operation inconnue : {operation}",
+            "operations_disponibles": list(operations.keys())
+        }), 400
+
+    result = operations[operation](a, b)
+
+    if result is None:
+        return jsonify({"error": "Division par zero impossible"}), 400
+
+    return jsonify({
+        "a": a,
+        "b": b,
+        "operation": operation,
+        "result": result
+    }), 200
+
+
+@app.route("/info", methods=["GET"])
+def info():
+    return jsonify({
+        "environment": os.getenv("FLASK_ENV", "production"),
+        "python_version": os.sys.version,
+        "api_version": API_VERSION,
+        "deployed_at": datetime.datetime.utcnow().isoformat()
     }), 200
 
 
