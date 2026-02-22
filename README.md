@@ -1,8 +1,9 @@
-# CI/CD Pipeline - Flask API
+# Cloud Portfolio - CI/CD Pipeline
 
 ![CI/CD Pipeline](https://github.com/Radyreth/cloud-portfolio/actions/workflows/ci-cd.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.11-blue.svg)
+![Docker](https://img.shields.io/badge/docker-ready-blue.svg)
 
 > Pipeline CI/CD complet avec GitHub Actions : lint, tests, build Docker, scan de securite et deploiement automatique.
 
