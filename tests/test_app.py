@@ -167,3 +167,25 @@ class TestInfo:
         response = client.get("/info")
         data = response.get_json()
         assert "python_version" in data
+
+
+# =============================================================================
+# Tests de la route GET /version
+# =============================================================================
+class TestVersion:
+    def test_version_returns_200(self, client):
+        """La route version doit retourner 200."""
+        response = client.get("/version")
+        assert response.status_code == 200
+
+    def test_version_contains_version(self, client):
+        """La reponse doit contenir la version."""
+        response = client.get("/version")
+        data = response.get_json()
+        assert "version" in data
+
+    def test_version_contains_git_sha(self, client):
+        """La reponse doit contenir le git SHA."""
+        response = client.get("/version")
+        data = response.get_json()
+        assert "git_sha" in data
