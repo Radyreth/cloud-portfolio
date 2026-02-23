@@ -31,7 +31,8 @@ def home():
             "GET /": "Cette page",
             "GET /health": "Health check",
             "POST /calculate": "Calculatrice (envoyer JSON avec a, b, operation)",
-            "GET /info": "Informations sur l'environnement"
+            "GET /info": "Informations sur l'environnement",
+            "GET /version": "Build metadata (git SHA, build date)"
         }
     }), 200
 
@@ -86,6 +87,16 @@ def info():
         "python_version": os.sys.version,
         "api_version": API_VERSION,
         "deployed_at": datetime.datetime.utcnow().isoformat()
+    }), 200
+
+
+@app.route("/version", methods=["GET"])
+def version():
+    return jsonify({
+        "version": API_VERSION,
+        "git_sha": os.getenv("GIT_SHA", "unknown"),
+        "build_date": os.getenv("BUILD_DATE", "unknown"),
+        "environment": os.getenv("FLASK_ENV", "production")
     }), 200
 
 
